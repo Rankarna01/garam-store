@@ -1,7 +1,85 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FrontController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\DashboardController;
 
-Route::get('/', function () {
-    return view('welcome');
+/*
+|--------------------------------------------------------------------------
+| PUBLIK ROUTE (Semua Orang Bisa Akses)
+|--------------------------------------------------------------------------
+*/
+// Halaman Utama & Detail Produk
+Route::get('/', [FrontController::class, 'index'])->name('home');
+Route::get('/product/{slug}', [FrontController::class, 'show'])->name('product.show');
+
+// Keranjang Belanja (AJAX) - Guest boleh isi keranjang
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::patch('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+Route::get('/cart/data', [CartController::class, 'getCart'])->name('cart.data');
+
+// Webhook Midtrans (Dipanggil otomatis oleh server Midtrans)
+Route::post('/api/midtrans-callback', [CheckoutController::class, 'callback']);
+
+/*
+|--------------------------------------------------------------------------
+| GUEST ROUTE (Hanya untuk yang belum login)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+});
+
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTE (Hanya untuk yang SUDAH login)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Fitur Member: Checkout & Riwayat
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::get('/checkout/payment/{invoice_number}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+    Route::post('/checkout/success-local/{invoice_number}', [CheckoutController::class, 'successLocal'])->name('checkout.success_local');
+    Route::get('/my-orders', [FrontController::class, 'myOrders'])->name('my-orders');
+    Route::get('/order/{invoice_number}', [FrontController::class, 'trackOrder'])->name('order.track');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTE (Tambahkan Middleware Admin nanti jika perlu)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        Route::resource('products', ProductController::class);
+        Route::resource('orders', OrderController::class)->only(['index', 'show', 'update']);
+        // TAMBAHKAN INI: Manajemen Pengguna
+        Route::resource('users', UserController::class)->only(['index', 'destroy']);
+        Route::put('users/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
+
+        // TAMBAHKAN INI: Laporan Penjualan
+        Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.excel');
+        Route::get('reports/export/print', [ReportController::class, 'printPdf'])->name('reports.print');
+
+        // TAMBAHKAN INI: Manajemen Testimoni
+        Route::resource('testimonials', \App\Http\Controllers\Admin\TestimonialController::class)->except(['show', 'edit', 'update']);
+    });
 });

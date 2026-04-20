@@ -1,77 +1,81 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product;
+use App\Models\Product; // Pastikan model Product dipanggil
 
 class CartController extends Controller
 {
+    // Mengambil semua isi keranjang untuk ditampilkan di Drawer
+    public function getCart()
+    {
+        $cart = session()->get('cart', []);
+        $totalAmount = 0;
+        
+        foreach ($cart as $item) {
+            $totalAmount += $item['price'] * $item['quantity'];
+        }
+
+        return response()->json([
+            'cartData' => $cart,
+            'totalAmount' => $totalAmount
+        ]);
+    }
+
     // Menambah produk ke keranjang
     public function add(Request $request)
     {
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::find($request->product_id);
+        
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan']);
+        }
+
         $cart = session()->get('cart', []);
 
-        if(isset($cart[$product->id])) {
+        // Jika produk sudah ada di keranjang, tambah jumlahnya
+        if (isset($cart[$product->id])) {
             $cart[$product->id]['quantity']++;
         } else {
+            // Jika belum ada, masukkan sebagai item baru
             $cart[$product->id] = [
                 "name" => $product->name,
                 "quantity" => 1,
                 "price" => $product->price,
-                "image" => $product->image
+                "image" => $product->image // Pastikan nama kolom gambar di database adalah 'image'
             ];
         }
 
+        // SIMPAN KE SESSION
         session()->put('cart', $cart);
         
-        return response()->json([
-            'success' => true, 
-            'message' => 'Produk ditambahkan!',
-            'cartCount' => collect($cart)->sum('quantity'),
-            'cartData' => $cart
-        ]);
+        return response()->json(['success' => true, 'message' => 'Berhasil masuk keranjang!']);
     }
 
-    // Mengupdate jumlah (Qqty)
+    // Mengubah jumlah item (+ atau -)
     public function update(Request $request)
     {
-        if($request->id && $request->quantity){
-            $cart = session()->get('cart');
-            $cart[$request->id]["quantity"] = $request->quantity;
-            session()->put('cart', $cart);
-            return response()->json(['success' => true]);
+        $cart = session()->get('cart', []);
+        
+        if (isset($cart[$request->id])) {
+            $cart[$request->id]['quantity'] = $request->quantity;
+            session()->put('cart', $cart); // Simpan perubahan
         }
+        
+        return response()->json(['success' => true]);
     }
 
-    // Menghapus produk dari keranjang
+    // Menghapus item dari keranjang (Tombol X)
     public function remove(Request $request)
     {
-        if($request->id) {
-            $cart = session()->get('cart');
-            if(isset($cart[$request->id])) {
-                unset($cart[$request->id]);
-                session()->put('cart', $cart);
-            }
-            return response()->json(['success' => true]);
+        $cart = session()->get('cart', []);
+        
+        if (isset($cart[$request->id])) {
+            unset($cart[$request->id]); // Hapus dari array
+            session()->put('cart', $cart); // Simpan perubahan
         }
-    }
-
-    // Mengambil data keranjang (untuk update UI Drawer)
-    public function getCart()
-    {
-        return response()->json([
-            'cartData' => session()->get('cart', []),
-            'totalAmount' => $this->calculateTotal()
-        ]);
-    }
-
-    private function calculateTotal()
-    {
-        $total = 0;
-        foreach(session('cart', []) as $details){
-            $total += $details['price'] * $details['quantity'];
-        }
-        return $total;
+        
+        return response()->json(['success' => true]);
     }
 }

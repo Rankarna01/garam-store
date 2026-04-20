@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\DB;
 class ReportController extends Controller
 {
     // Fungsi untuk menampilkan halaman utama laporan (INI YANG BIKIN ERROR TADI KARENA KOSONG)
-    public function index()
+   public function index()
     {
-        $salesData = Order::select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_price) as total'))
+        $salesData = \App\Models\Order::select(\Illuminate\Support\Facades\DB::raw('DATE(created_at) as date'), \Illuminate\Support\Facades\DB::raw('SUM(total_price) as total'))
                     ->whereIn('status', ['paid', 'processed', 'shipped', 'completed'])
                     ->groupBy('date')
                     ->orderBy('date', 'asc')
                     ->take(30)
                     ->get();
 
-        $orders = Order::whereIn('status', ['paid', 'processed', 'shipped', 'completed'])->latest()->get();
+        $orders = \App\Models\Order::whereIn('status', ['paid', 'processed', 'shipped', 'completed'])->latest()->get();
         $totalRevenue = $orders->sum('total_price');
 
         return view('admin.reports.index', compact('salesData', 'orders', 'totalRevenue'));

@@ -118,7 +118,171 @@
     </main>
 
     <script>
+        // Inisialisasi Icon Lucide
         lucide.createIcons();
+
+        // ==========================================
+        // LOGIKA KERANJANG BELANJA (CART DRAWER AJAX)
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            // 1. Buka/Tutup Drawer Keranjang
+            window.toggleCartDrawer = function() {
+                const drawer = document.getElementById('cart-drawer');
+                const overlay = document.getElementById('cart-drawer-overlay');
+                
+                if (drawer && overlay) {
+                    if (drawer.classList.contains('translate-x-full')) {
+                        overlay.classList.remove('hidden');
+                        setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                        drawer.classList.remove('translate-x-full');
+                        
+                        // Ambil data terbaru dari database setiap kali drawer dibuka
+                        fetchCartData();
+                    } else {
+                        overlay.classList.add('opacity-0');
+                        drawer.classList.add('translate-x-full');
+                        setTimeout(() => overlay.classList.add('hidden'), 300);
+                    }
+                }
+            };
+
+            // 2. Ambil Data Keranjang & Render HTML
+            window.fetchCartData = function() {
+                // Pastikan route ini ada di web.php
+                fetch("{{ route('cart.data') }}", {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById('cart-items-container');
+                    const emptyMsg = document.getElementById('empty-cart-msg');
+                    const checkoutBtn = document.getElementById('checkout-btn');
+                    const totalAmountEl = document.getElementById('cart-total-amount');
+
+                    if(!container) return; // Mencegah error jika elemen tidak ada di halaman
+
+                    let html = '';
+
+                    // Jika Keranjang Kosong
+                    if (!data.cartData || Object.keys(data.cartData).length === 0) {
+                        if(emptyMsg) emptyMsg.classList.remove('hidden');
+                        if(checkoutBtn) checkoutBtn.classList.add('opacity-50', 'pointer-events-none');
+                        if(totalAmountEl) totalAmountEl.innerText = 'Rp 0';
+                        
+                        // Bersihkan container dari item lama
+                        Array.from(container.children).forEach(child => {
+                            if (child.id !== 'empty-cart-msg') child.remove();
+                        });
+                    } else {
+                        // Jika Keranjang Ada Isinya
+                        if(emptyMsg) emptyMsg.classList.add('hidden');
+                        if(checkoutBtn) checkoutBtn.classList.remove('opacity-50', 'pointer-events-none');
+                        
+                        // Looping item keranjang
+                        for (const [id, details] of Object.entries(data.cartData)) {
+                            let imageUrl = details.image ? `/storage/${details.image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(details.name)}&background=f3f4f6&color=gray`;
+                            
+                            html += `
+                                <div class="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm relative">
+                                    <img src="${imageUrl}" alt="${details.name}" class="w-16 h-16 rounded-xl object-cover border border-gray-50">
+                                    
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-dark-text text-sm mb-1">${details.name}</h4>
+                                        <p class="text-sea-blue font-bold text-sm">Rp ${new Intl.NumberFormat('id-ID').format(details.price)}</p>
+                                    </div>
+                                    
+                                    <div class="flex items-center gap-3 bg-[#f8fdff] px-2 py-1.5 rounded-lg border border-light-blue">
+                                        <button onclick="updateQuantity(${id}, ${details.quantity - 1})" class="w-7 h-7 flex items-center justify-center text-sea-blue hover:bg-white hover:shadow-sm rounded-md transition-all font-bold text-lg cursor-pointer">-</button>
+                                        <span class="text-sm font-semibold w-4 text-center">${details.quantity}</span>
+                                        <button onclick="updateQuantity(${id}, ${details.quantity + 1})" class="w-7 h-7 flex items-center justify-center text-sea-blue hover:bg-white hover:shadow-sm rounded-md transition-all font-bold text-lg cursor-pointer">+</button>
+                                    </div>
+
+                                    <button onclick="removeItem(${id})" class="absolute -top-2 -right-2 w-7 h-7 bg-white text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors shadow-md border border-gray-100 cursor-pointer">
+                                        <i data-lucide="x" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            `;
+                        }
+                        
+                        // Timpa isi container (tapi pertahankan div empty-cart-msg agar tidak error saat dikosongkan lagi)
+                        container.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-gray-400 hidden" id="empty-cart-msg"><i data-lucide="shopping-cart" class="w-16 h-16 mb-4 opacity-50"></i><p>Keranjang Anda masih kosong</p></div>` + html;
+                        
+                        if(totalAmountEl) totalAmountEl.innerText = `Rp ${new Intl.NumberFormat('id-ID').format(data.totalAmount)}`;
+                        
+                        // Render ulang icon x setelah elemen baru dimasukkan ke DOM
+                        lucide.createIcons();
+                    }
+                })
+                .catch(error => console.error('Error fetching cart:', error));
+            };
+
+            // 3. Tambah Item ke Keranjang
+            window.addToCart = function(productId, productName) {
+                fetch("{{ route('cart.add') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ product_id: productId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        // Buka laci setelah berhasil masuk keranjang
+                        toggleCartDrawer();
+                    }
+                })
+                .catch(error => console.error('Error adding to cart:', error));
+            };
+
+            // 4. Ubah Kuantitas
+            window.updateQuantity = function(productId, newQuantity) {
+                if(newQuantity < 1) {
+                    removeItem(productId);
+                    return;
+                }
+
+                fetch("{{ route('cart.update') }}", {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ id: productId, quantity: newQuantity })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) fetchCartData(); // Render ulang jika sukses
+                })
+                .catch(error => console.error('Error updating cart:', error));
+            };
+
+            // 5. Hapus Item
+            window.removeItem = function(productId) {
+                fetch("{{ route('cart.remove') }}", {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ id: productId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) fetchCartData(); // Render ulang jika sukses
+                })
+                .catch(error => console.error('Error removing from cart:', error));
+            };
+
+            // Jika ada icon keranjang di navbar, update angkanya saat pertama kali load
+            // setTimeout(() => fetchCartData(), 500); // Opsional
+        });
     </script>
 </body>
 </html>

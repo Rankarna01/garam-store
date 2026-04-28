@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PasswordResetController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +42,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+    Route::post('/forgot-password-request', [AuthController::class, 'submitResetRequest'])->name('password.request.submit');
 });
 
 /*
@@ -81,5 +84,20 @@ Route::middleware('auth')->group(function () {
 
         // TAMBAHKAN INI: Manajemen Testimoni
         Route::resource('testimonials', \App\Http\Controllers\Admin\TestimonialController::class)->except(['show', 'edit', 'update']);
+        // Manajemen Reset Sandi
+        Route::resource('password-resets', \App\Http\Controllers\Admin\PasswordResetController::class)->only(['index', 'update', 'destroy']);
     });
+
+
+    Route::prefix('owner')->middleware(['auth'])->group(function () {
+    
+    // 1. Dashboard Owner
+    Route::get('/dashboard', [\App\Http\Controllers\Owner\DashboardController::class, 'index'])->name('owner.dashboard');
+    
+    // // 2. Laporan Penjualan Owner
+    Route::get('/reports', [\App\Http\Controllers\Owner\ReportController::class, 'index'])->name('owner.reports.index');
+    Route::get('/reports/export-excel', [\App\Http\Controllers\Owner\ReportController::class, 'exportExcel'])->name('owner.reports.excel');
+    Route::get('/reports/print-pdf', [\App\Http\Controllers\Owner\ReportController::class, 'printPdf'])->name('owner.reports.print');
+
+});
 });

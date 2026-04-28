@@ -18,7 +18,6 @@ class AuthController extends Controller
     // Memproses data login
     public function login(Request $request)
     {
-        // Validasi input
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -26,19 +25,22 @@ class AuthController extends Controller
 
         $remember = $request->has('remember');
 
-        // Coba melakukan autentikasi
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            // Cek role, jika admin arahkan ke dashboard, jika bukan ke halaman utama
-            if (Auth::user()->role === 'admin') {
+            // CEK ROLE LALU ARAHKAN KE HALAMAN YANG SESUAI
+            $role = Auth::user()->role;
+            
+            if ($role === 'admin') {
                 return redirect()->intended('/admin/dashboard');
+            } elseif ($role === 'owner') {
+                return redirect()->intended('/owner/dashboard');
             }
 
+            // Jika customer, arahkan ke beranda
             return redirect()->intended('/');
         }
 
-        // Jika gagal login
         return back()->withErrors([
             'email' => 'Email atau kata sandi yang Anda masukkan salah.',
         ])->onlyInput('email');
@@ -82,5 +84,23 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/login');
+    }
+
+    // Memproses Permintaan Lupa Sandi dari Customer
+    public function submitResetRequest(Request $request)
+    {
+        $request->validate([
+            'reset_email' => 'required|email|exists:users,email',
+        ], [
+            'reset_email.exists' => 'Email ini tidak terdaftar di sistem kami.'
+        ]);
+
+        // Simpan permintaan ke tabel
+        \App\Models\PasswordResetRequest::create([
+            'email' => $request->reset_email,
+            'status' => 'pending'
+        ]);
+
+        return back()->with('reset_success', 'Permintaan ganti sandi berhasil dikirim! Silakan hubungi Admin atau tunggu konfirmasi sandi baru Anda.');
     }
 }

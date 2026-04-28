@@ -50,11 +50,15 @@
                                 <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-bold rounded-full">Draft</span>
                             @endif
                         </td>
-                        <td class="p-4 text-right">
+                       <td class="p-4 flex items-center justify-end gap-2">
+                            <a href="{{ route('admin.products.edit', $item->id) }}" class="w-8 h-8 rounded bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors flex items-center justify-center" title="Edit Produk">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            
                             <form action="{{ route('admin.products.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus produk ini?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="w-8 h-8 rounded bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center">
+                                <button type="submit" class="w-8 h-8 rounded bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center" title="Hapus Produk">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </form>

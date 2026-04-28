@@ -78,11 +78,13 @@
 
     <aside class="w-64 bg-surface shadow-md flex flex-col h-full z-20">
         <div class="h-16 flex items-center px-6 border-b border-gray-100">
-            <div
-                class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center mr-3">
-                <i class="fa-solid fa-droplet text-white text-sm"></i>
-            </div>
-            <span class="text-xl font-bold text-secondary">Salt<span class="text-primary">Pro</span></span>
+            <a href="{{ route('home') }}" class="flex items-center gap-3 group" title="Kembali ke Halaman Utama">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo CV Merisa Jaya" class="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+                
+                <span class="text-lg font-bold font-poppins text-secondary tracking-tight whitespace-nowrap">
+                    CV MERISA<span class="text-primary">JAYA</span>
+                </span>
+            </a>
         </div>
 
         <nav class="flex-1 overflow-y-auto py-4">
@@ -108,6 +110,15 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.password-resets.index') }}" class="sidebar-link flex items-center px-6 py-3 text-sm font-medium text-textLight">
+                        <i class="fa-solid fa-key w-6"></i> Lupa Sandi
+                        @php $pendingResets = \App\Models\PasswordResetRequest::where('status', 'pending')->count(); @endphp
+                        @if($pendingResets > 0)
+                            <span class="ml-auto bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $pendingResets }}</span>
+                        @endif
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.reports.index') }}" class="sidebar-link flex items-center px-6 py-3 text-sm font-medium text-textLight">
                         <i class="fa-solid fa-file-invoice-dollar w-6"></i> Laporan
                     </a>
@@ -120,13 +131,15 @@
             </ul>
         </nav>
 
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit"
-                class="flex items-center gap-3 text-sm font-medium text-textLight hover:text-red-500 transition-colors w-full text-left">
-                <i class="fa-solid fa-right-from-bracket w-5"></i> Keluar
-            </button>
-        </form>
+        <div class="p-4 border-t border-gray-100 mt-auto bg-gray-50/50">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit"
+                    class="flex items-center w-full gap-3 px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-colors text-left shadow-sm border border-transparent hover:border-red-100">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Keluar Akun
+                </button>
+            </form>
+        </div>
     </aside>
 
     <div class="flex-1 flex flex-col h-full overflow-hidden">
@@ -142,11 +155,11 @@
                 </button>
 
                 <div class="flex items-center gap-3 border-l border-gray-200 pl-6">
-                    <img src="https://ui-avatars.com/api/?name=Admin+SaltPro&background=2face0&color=fff" alt="Admin"
-                        class="w-9 h-9 rounded-full">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Admin') }}&background=2face0&color=fff" alt="Admin"
+                        class="w-9 h-9 rounded-full object-cover">
                     <div class="hidden md:block">
-                        <p class="text-sm font-semibold leading-tight">Admin Utama</p>
-                        <p class="text-xs text-textLight">Superadmin</p>
+                        <p class="text-sm font-semibold leading-tight">{{ explode(' ', auth()->user()->name ?? 'Admin Utama')[0] }}</p>
+                        <p class="text-xs text-textLight">Administrator</p>
                     </div>
                 </div>
             </div>

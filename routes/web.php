@@ -32,6 +32,12 @@ Route::get('/cart/data', [CartController::class, 'getCart'])->name('cart.data');
 // Webhook Midtrans (Dipanggil otomatis oleh server Midtrans)
 Route::post('/api/midtrans-callback', [CheckoutController::class, 'callback']);
 
+Route::post('/forgot-password', [\App\Http\Controllers\AuthController::class, 'submitResetRequest'])->name('password.request.submit');
+Route::get('/verify-otp', [\App\Http\Controllers\AuthController::class, 'showOtpForm'])->name('password.otp.form');
+Route::post('/verify-otp', [\App\Http\Controllers\AuthController::class, 'verifyOtp'])->name('password.otp.verify');
+Route::get('/reset-password', [\App\Http\Controllers\AuthController::class, 'showResetPasswordForm'])->name('password.reset.form');
+Route::post('/reset-password', [\App\Http\Controllers\AuthController::class, 'updatePassword'])->name('password.reset.update');
+
 /*
 |--------------------------------------------------------------------------
 | GUEST ROUTE (Hanya untuk yang belum login)

@@ -75,8 +75,10 @@
 </head>
 
 <body class="text-textDark antialiased flex h-screen overflow-hidden">
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-20 hidden lg:hidden transition-opacity"></div>
 
-    <aside class="w-64 bg-surface shadow-md flex flex-col h-full z-20">
+    <aside id="sidebar" class="w-64 bg-surface shadow-md flex flex-col h-full z-30 fixed lg:static transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
         <div class="h-16 flex items-center px-6 border-b border-gray-100">
             <a href="{{ route('home') }}" class="flex items-center gap-3 group" title="Kembali ke Halaman Utama">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo CV Merisa Jaya" class="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
@@ -144,8 +146,13 @@
 
     <div class="flex-1 flex flex-col h-full overflow-hidden">
 
-        <header class="h-16 bg-surface shadow-sm flex items-center justify-between px-8 z-10">
-            <h1 class="text-xl font-semibold">{{ $header ?? 'Dasbor' }}</h1>
+        <header class="h-16 bg-surface shadow-sm flex items-center justify-between px-4 lg:px-8 z-10">
+            <div class="flex items-center gap-3">
+                <button id="mobileMenuBtn" class="lg:hidden text-textDark hover:text-primary focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <h1 class="text-xl font-semibold">{{ $header ?? 'Dasbor' }}</h1>
+            </div>
 
             <div class="flex items-center gap-6">
                 <button class="relative text-textLight hover:text-primary transition-colors">
@@ -165,12 +172,33 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-8 bg-background">
+        <main class="flex-1 overflow-y-auto p-4 lg:p-8 bg-background">
             {{ $slot }}
         </main>
 
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if(mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', function() {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.remove('hidden');
+                });
+            }
+
+            if(sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function() {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

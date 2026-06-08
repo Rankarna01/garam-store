@@ -23,5 +23,13 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'), // Ini kata sandinya
             'role' => 'admin',
         ]);
+
+        // Membuat Akun Owner
+        User::create([
+            'name' => 'Owner Merisa Jaya',
+            'email' => 'owner@merisajaya.com',
+            'password' => Hash::make('owner12345'), // Ganti sandi sesuai keinginan
+            'role' => 'owner',
+        ]);
     }
 }

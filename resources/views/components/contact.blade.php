@@ -17,8 +17,8 @@
             </p>
         </div>
         
-        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
-            <form id="contact-form" class="bg-white rounded-3xl shadow-xl p-8 lg:p-10 border border-light-blue opacity-0 translate-x-[-20px]">
+        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16">
+            <form id="contact-form" class="bg-white rounded-3xl shadow-xl p-6 sm:p-8 lg:p-10 border border-light-blue opacity-0 translate-x-[-20px]">
                 <h3 class="text-2xl font-bold text-dark-text font-poppins mb-6">
                     Kirimkan Pesan
                 </h3>
@@ -89,8 +89,8 @@
                     </div>
                 </div>
                 
-                <div class="contact-map-item rounded-3xl overflow-hidden shadow-xl h-[300px] relative opacity-0 translate-y-5">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3974.1575451870353!2d105.33536187453154!3d-5.07820065152693!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40bb383b95d279%3A0x82910a5b6f4d4bb0!2sCV.MERISA%20JAYA!5e0!3m2!1sid!2sid!4v1771507418475!5m2!1sid!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <div class="contact-map-item rounded-3xl overflow-hidden shadow-xl h-[300px] sm:h-[400px] relative opacity-0 translate-y-5">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3974.1575451870353!2d105.33536187453154!3d-5.07820065152693!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40bb383b95d279%3A0x82910a5b6f4d4bb0!2sCV.MERISA%20JAYA!5e0!3m2!1sid!2sid!4v1771507418475!5m2!1sid!2sid" class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     <div class="absolute bottom-4 left-4 bg-white rounded-xl p-3 shadow-lg">
                         <div class="flex items-center gap-2">
                             <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>

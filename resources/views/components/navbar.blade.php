@@ -18,11 +18,16 @@
             </nav>
             
             <div class="hidden lg:flex items-center gap-4">
+                <button onclick="toggleCartDrawer()" class="text-sm font-medium font-poppins text-dark-text hover:text-sea-blue flex items-center gap-2 transition-colors">
+                    <i data-lucide="shopping-cart" class="w-4 h-4 text-sea-blue"></i> Keranjang
+                </button>
+                <div class="w-px h-4 bg-gray-300 mx-2"></div> 
+                
                 @auth
                     <a href="{{ route('my-orders') }}" class="text-sm font-medium font-poppins text-dark-text hover:text-sea-blue flex items-center gap-2 transition-colors">
                         <i data-lucide="clipboard-list" class="w-4 h-4 text-sea-blue"></i> Pesananku
                     </a>
-                    <div class="w-px h-4 bg-gray-300"></div> 
+                    <div class="w-px h-4 bg-gray-300 mx-2"></div> 
                     
                     <div class="flex items-center gap-2 group cursor-pointer relative pb-2 pt-2">
                         <div class="w-8 h-8 rounded-full bg-light-blue text-sea-blue flex items-center justify-center font-bold text-xs uppercase border border-sea-blue/20">
@@ -54,6 +59,12 @@
             <nav class="flex flex-col gap-2 bg-white/95 backdrop-blur-lg rounded-2xl p-4 shadow-lg border border-white/50">
                 <a href="{{ route('home') }}" class="text-grey-text hover:text-sea-blue hover:bg-light-blue px-4 py-3 rounded-xl transition-all font-medium font-poppins">Beranda</a>
                 <a href="{{ route('home') }}#products" class="text-grey-text hover:text-sea-blue hover:bg-light-blue px-4 py-3 rounded-xl transition-all font-medium font-poppins">Produk</a>
+                
+                <div class="border-t border-gray-100 my-2"></div>
+                
+                <button onclick="toggleCartDrawer()" class="text-dark-text hover:text-sea-blue hover:bg-light-blue px-4 py-3 rounded-xl transition-all font-medium font-poppins flex items-center gap-2 text-left w-full">
+                    <i data-lucide="shopping-cart" class="w-5 h-5 text-sea-blue"></i> Keranjang Belanja
+                </button>
                 
                 <div class="border-t border-gray-100 my-2"></div>
                 

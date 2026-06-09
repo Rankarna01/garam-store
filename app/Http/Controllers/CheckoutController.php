@@ -15,9 +15,9 @@ class CheckoutController extends Controller
         $cartItems = session()->get('cart', []);
         
         // HAPUS COMMENT INI JIKA SUDAH PAKAI KERANJANG SUNGGUHAN
-        // if (empty($cartItems)) {
-        //     return redirect('/#products')->with('error', 'Keranjang Anda kosong!');
-        // }
+        if (empty($cartItems)) {
+            return redirect('/#products')->with('error', 'Keranjang Anda kosong! Silakan pilih produk terlebih dahulu.');
+        }
 
         $totalAmount = 0;
         foreach($cartItems as $item) {
@@ -25,7 +25,7 @@ class CheckoutController extends Controller
         }
 
         // Dummy data jika keranjang kosong (untuk testing)
-        if(empty($cartItems)) { $totalAmount = 150000; } 
+        // if(empty($cartItems)) { $totalAmount = 150000; } 
 
         return view('checkout', compact('cartItems', 'totalAmount'));
     }
@@ -47,7 +47,7 @@ class CheckoutController extends Controller
         }
 
         // Dummy data total jika kosong
-        if(empty($cartItems)) { $totalAmount = 150000; }
+        // if(empty($cartItems)) { $totalAmount = 150000; }
 
         // 1. Simpan ke database
         $order = Order::create([

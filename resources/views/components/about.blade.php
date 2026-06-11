@@ -6,7 +6,7 @@
         <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div id="about-image" class="relative opacity-0 translate-y-10">
                 <div class="relative rounded-3xl overflow-hidden shadow-2xl">
-                    <img src="{{ asset('images/about-salt.jpg') }}" alt="Garam laut di mangkuk kayu" class="w-full h-[400px] lg:h-[500px] object-cover">
+                    <img src="{{ asset('images/about.jpg') }}" alt="Garam laut di mangkuk kayu" class="w-full h-[400px] lg:h-[500px] object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-deep-blue/30 to-transparent"></div>
                 </div>
                 
@@ -16,7 +16,7 @@
                             <i data-lucide="award" class="w-7 h-7 text-white"></i>
                         </div>
                         <div>
-                            <div class="text-2xl font-bold text-dark-text font-poppins">15+</div>
+                            <div class="text-2xl font-bold text-dark-text font-poppins">9+</div>
                             <div class="text-sm text-grey-text">Tahun Keunggulan</div>
                         </div>
                     </div>
@@ -32,15 +32,15 @@
                 </div>
                 
                 <h2 class="animate-item text-3xl sm:text-4xl lg:text-5xl font-bold font-poppins text-dark-text mb-6 leading-tight opacity-0">
-                    Menghadirkan Anugerah <span class="text-gradient">Termurni Alam</span> ke Meja Anda
+                    Garam pilihan untuk <span class="text-gradient">cita rasa </span> istimewa!
                 </h2>
                 
                 <p class="animate-item text-grey-text text-lg leading-relaxed mb-6 opacity-0">
-                    Kami berdedikasi tinggi untuk menghadirkan garam dengan kualitas terbaik, yang bersumber langsung dari dataran garam alami. Komitmen kami adalah pada kemurnian dan keberlanjutan, memastikan setiap butiran yang Anda terima bebas dari proses buatan.
+                    CV Merisa Jaya adalah perusahaan yang bergerak di bidang produksi, pengolahan, dan distribusi garam berkualitas untuk memenuhi kebutuhan masyarakat, pelaku usaha, serta berbagai sektor industri. Dengan mengedepankan standar mutu, kebersihan, dan proses produksi yang terkontrol, perusahaan berkomitmen menghadirkan produk garam yang aman, berkualitas, dan terpercaya.
                 </p>
                 
                 <p class="animate-item text-grey-text leading-relaxed mb-8 opacity-0">
-                    Dari ladang garam yang disinari matahari hingga ke dapur Anda, kami mempertahankan standar kontrol kualitas tertinggi. Garam kami dipanen menggunakan metode tradisional yang menjaga kandungan mineral alami dan profil rasa yang unik.
+                    Sejak berdiri, CV Merisa Jaya terus berupaya meningkatkan kualitas produk dan pelayanan melalui inovasi, pengelolaan yang profesional, serta sistem distribusi yang efektif. Komitmen tersebut menjadi landasan perusahaan dalam membangun kepercayaan pelanggan dan menjalin kemitraan jangka panjang dengan berbagai pihak.
                 </p>
                 
                 <div class="animate-item space-y-4 mb-8 opacity-0">

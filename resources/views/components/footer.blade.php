@@ -13,31 +13,12 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
             <div class="sm:col-span-2 lg:col-span-1">
                 <a href="#hero" class="flex items-center gap-2 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sea-blue to-[#1a8bc4] flex items-center justify-center">
-                        <i data-lucide="droplets" class="w-5 h-5 text-white"></i>
-                    </div>
                     <span class="text-xl font-bold font-poppins">
-                        Salt<span class="text-sea-blue">Pro</span>
+                        Merisa<span class="text-sea-blue">Jaya</span>
                     </span>
                 </a>
                 <p class="text-white/70 text-sm leading-relaxed mb-6">
-                    Menghadirkan anugerah alam paling murni ke meja Anda. Garam laut kualitas premium, dipanen dengan hati-hati dan disajikan dengan cinta.
-                </p>
-                
-                <div class="flex gap-3">
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-sea-blue transition-all duration-300 hover:rotate-[360deg]">
-                        <i data-lucide="facebook" class="w-5 h-5"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-sea-blue transition-all duration-300 hover:rotate-[360deg]">
-                        <i data-lucide="instagram" class="w-5 h-5"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-sea-blue transition-all duration-300 hover:rotate-[360deg]">
-                        <i data-lucide="twitter" class="w-5 h-5"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-sea-blue transition-all duration-300 hover:rotate-[360deg]">
-                        <i data-lucide="youtube" class="w-5 h-5"></i>
-                    </a>
-                </div>
+Garam pilihan untuk cita rasa istimewa!                </p>
             </div>
             
             <div>
@@ -63,19 +44,23 @@
             </div>
             
             <div>
-                <h4 class="text-lg font-bold font-poppins mb-4">Berlangganan</h4>
-                <p class="text-white/70 text-sm mb-4">Daftar untuk mendapatkan penawaran khusus dan pembaruan terbaru.</p>
-                <form class="flex gap-2" onsubmit="event.preventDefault(); alert('Terima kasih telah berlangganan!');">
-                    <input type="email" placeholder="Email Anda" class="flex-1 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-sea-blue transition-colors" required>
-                    <button type="submit" class="px-4 py-2 rounded-full bg-gradient-to-br from-sea-blue to-[#1a8bc4] text-sm font-medium hover:shadow-lg transition-all duration-300">Daftar</button>
-                </form>
+                <h4 class="text-lg font-bold font-poppins mb-4">Jam Operasional</h4>
+                <p class="text-white/70 text-sm mb-4">Senin 09.00-18.00 WIB</p>
+                <p class="text-white/70 text-sm mb-4">Selasa 09.00-18.00 WIB</p>
+                <p class="text-white/70 text-sm mb-4">Rabu 09.00-18.00 WIB</p>
+                <p class="text-white/70 text-sm mb-4">Kamis 09.00-18.00 WIB</p>
+                <p class="text-white/70 text-sm mb-4">Jumat 09.00-18.00 WIB</p>
+                <p class="text-white/70 text-sm mb-4">Sabtu 09.00-18.00 WIB</p>
+                <p class="text-white/70 text-sm mb-4">Minggu 09.00-18.00 WIB</p>
+
+
             </div>
         </div>
         
         <div class="border-t border-white/10 pt-8">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <p class="text-white/50 text-sm text-center sm:text-left">
-                    &copy; {{ date('Y') }} SaltPro. Hak cipta dilindungi undang-undang.
+                    &copy; {{ date('Y') }} Merisa Jaya. Hak cipta dilindungi undang-undang.
                 </p>
                 <p class="text-white/50 text-sm flex items-center gap-1">
                     Dibuat dengan <i data-lucide="heart" class="w-4 h-4 text-red-400 fill-red-400"></i> untuk pecinta garam

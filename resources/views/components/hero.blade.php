@@ -43,7 +43,7 @@
             
             <div id="hero-stats" class="flex flex-wrap gap-8 mt-12 pt-8 border-t border-sea-blue/10 opacity-0">
                 <div class="text-center">
-                    <div class="text-3xl sm:text-4xl font-bold text-gradient font-poppins">15+</div>
+                    <div class="text-3xl sm:text-4xl font-bold text-gradient font-poppins">9+</div>
                     <div class="text-sm text-grey-text mt-1">Tahun Pengalaman</div>
                 </div>
                 <div class="text-center">

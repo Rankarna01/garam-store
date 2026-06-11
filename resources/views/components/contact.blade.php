@@ -52,6 +52,32 @@
                         Kirim Pesan
                     </button>
                 </div>
+                <script>
+document.getElementById('contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const nama = document.getElementById('form-name').value;
+    const email = document.getElementById('form-email').value;
+    const pesan = document.getElementById('form-message').value;
+
+    const nomorWA = "6281374620006"; // Ganti dengan nomor WhatsApp Anda
+
+    const text =
+`Halo CV Merisa Jaya,
+
+Saya ingin menghubungi Anda.
+
+*Nama :* ${nama}
+*Email :* ${email}
+
+*Pesan :*
+${pesan}`;
+
+    const url = `https://wa.me/${nomorWA}?text=${encodeURIComponent(text)}`;
+
+    window.open(url, "_blank");
+});
+</script>
             </form>
             
             <div id="contact-info">
@@ -69,7 +95,7 @@
                             <i data-lucide="phone" class="w-6 h-6 text-white"></i>
                         </div>
                         <h4 class="font-bold text-dark-text font-poppins mb-1">Telepon Kami</h4>
-                        <p class="text-sm text-grey-text">+62 812-3456-7890</p>
+                        <p class="text-sm text-grey-text">+62 813-7462-0006</p>
                     </div>
                     
                     <div class="contact-info-item bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 group opacity-0 translate-y-5">
@@ -77,7 +103,7 @@
                             <i data-lucide="mail" class="w-6 h-6 text-white"></i>
                         </div>
                         <h4 class="font-bold text-dark-text font-poppins mb-1">Email Kami</h4>
-                        <p class="text-sm text-grey-text">halo@saltpro.com</p>
+                        <p class="text-sm text-grey-text">merisajaya@gmail.com</p>
                     </div>
                     
                     <div class="contact-info-item bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 group opacity-0 translate-y-5">
@@ -85,7 +111,7 @@
                             <i data-lucide="clock" class="w-6 h-6 text-white"></i>
                         </div>
                         <h4 class="font-bold text-dark-text font-poppins mb-1">Jam Operasional</h4>
-                        <p class="text-sm text-grey-text">Sen - Jum: 09:00 - 18:00</p>
+                        <p class="text-sm text-grey-text">Sen - Ming: 09:00 - 18:00</p>
                     </div>
                 </div>
                 

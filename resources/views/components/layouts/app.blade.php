@@ -193,10 +193,8 @@
                                         <p class="text-sea-blue font-bold text-sm">Rp ${new Intl.NumberFormat('id-ID').format(details.price)}</p>
                                     </div>
                                     
-                                    <div class="flex items-center gap-3 bg-[#f8fdff] px-2 py-1.5 rounded-lg border border-light-blue">
-                                        <button onclick="updateQuantity(${id}, ${details.quantity - 1})" class="w-7 h-7 flex items-center justify-center text-sea-blue hover:bg-white hover:shadow-sm rounded-md transition-all font-bold text-lg cursor-pointer">-</button>
-                                        <span class="text-sm font-semibold w-4 text-center">${details.quantity}</span>
-                                        <button onclick="updateQuantity(${id}, ${details.quantity + 1})" class="w-7 h-7 flex items-center justify-center text-sea-blue hover:bg-white hover:shadow-sm rounded-md transition-all font-bold text-lg cursor-pointer">+</button>
+                                    <div class="flex items-center">
+                                        <input type="number" min="1" value="${details.quantity}" onchange="updateQuantity(${id}, parseInt(this.value) || 1)" class="w-16 px-2 py-1.5 text-center text-sm font-semibold bg-[#f8fdff] border border-light-blue rounded-lg focus:outline-none focus:border-sea-blue transition-colors">
                                     </div>
 
                                     <button onclick="removeItem(${id})" class="absolute -top-2 -right-2 w-7 h-7 bg-white text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors shadow-md border border-gray-100 cursor-pointer">

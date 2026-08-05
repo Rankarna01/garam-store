@@ -24,7 +24,7 @@
                     <input type="number" name="stock" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm" placeholder="100">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-textDark mb-2">Berat (Gram) <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-textDark mb-2">Berat (KG) <span class="text-red-500">*</span></label>
                     <input type="number" name="weight" required class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm" placeholder="500">
                 </div>
 

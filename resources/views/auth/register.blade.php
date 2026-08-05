@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Akun - SaltPro</title>
+    <title>Daftar Akun - Merisa Jaya</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +18,7 @@
 
     <div class="bg-surface w-full max-w-md rounded-2xl shadow-xl overflow-hidden border border-gray-100 my-8">
         <div class="bg-gradient-to-br from-secondary to-primary p-8 text-center">
-            <h2 class="text-2xl font-bold text-white mb-1">Bergabung dengan SaltPro</h2>
+            <h2 class="text-2xl font-bold text-white mb-1">Bergabung dengan Merisa Jaya</h2>
             <p class="text-white/80 text-sm">Daftar untuk mulai berbelanja produk kami</p>
         </div>
 

@@ -65,7 +65,7 @@
                         <div class="mb-8">
                             <h3 class="font-bold text-dark-text mb-2">Informasi Produk:</h3>
                             <ul class="space-y-2 text-grey-text text-sm">
-                                <li><strong class="text-dark-text">Berat Bersih:</strong> {{ $product->weight }} gram</li>
+                                <li><strong class="text-dark-text">Berat Bersih:</strong> {{ $product->weight }} KG</li>
                                 <li><strong class="text-dark-text">Kategori:</strong> Garam Laut Alami</li>
                             </ul>
                         </div>

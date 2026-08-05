@@ -38,7 +38,7 @@
                             @endif
                             <div>
                                 <p class="font-semibold text-textDark">{{ $item->name }}</p>
-                                <p class="text-xs text-textLight">{{ $item->weight }} gram</p>
+                                <p class="text-xs text-textLight">{{ $item->weight }} KG</p>
                             </div>
                         </td>
                         <td class="p-4 font-medium text-secondary">Rp {{ number_format($item->price, 0, ',', '.') }}</td>

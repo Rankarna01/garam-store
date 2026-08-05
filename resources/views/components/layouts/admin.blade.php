@@ -112,15 +112,6 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.password-resets.index') }}" class="sidebar-link flex items-center px-6 py-3 text-sm font-medium text-textLight">
-                        <i class="fa-solid fa-key w-6"></i> Lupa Sandi
-                        @php $pendingResets = \App\Models\PasswordResetRequest::where('status', 'pending')->count(); @endphp
-                        @if($pendingResets > 0)
-                            <span class="ml-auto bg-accent text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $pendingResets }}</span>
-                        @endif
-                    </a>
-                </li>
-                <li>
                     <a href="{{ route('admin.reports.index') }}" class="sidebar-link flex items-center px-6 py-3 text-sm font-medium text-textLight">
                         <i class="fa-solid fa-file-invoice-dollar w-6"></i> Laporan
                     </a>

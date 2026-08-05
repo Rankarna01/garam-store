@@ -30,7 +30,7 @@
                     <img src="{{ asset('images/logo.png') }}" alt="Logo CV Merisa Jaya" class="w-full h-full object-contain drop-shadow-md">
                 </div>
                 <h2 class="text-2xl font-bold text-white mb-1">Selamat Datang!</h2>
-                <p class="text-white/80 text-sm">Masuk ke akun SaltPro Anda</p>
+                <p class="text-white/80 text-sm">Masuk ke akun Merisa Jaya Anda</p>
             </div>
         </div>
 

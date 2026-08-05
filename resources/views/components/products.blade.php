@@ -64,7 +64,7 @@
                         <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
                     </div>
                     <h3 class="text-lg font-bold text-dark-text font-poppins mb-1">{{ $product->name }}</h3>
-                    <p class="text-sm text-grey-text mb-3">{{ $product->weight }} gram</p>
+                    <p class="text-sm text-grey-text mb-3">{{ $product->weight }} KG</p>
                     <p class="text-sm text-grey-text line-clamp-2 mb-4">{{ Str::limit($product->description, 80) }}</p>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">

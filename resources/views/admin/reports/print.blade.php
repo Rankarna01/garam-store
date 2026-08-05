@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Pendapatan SaltPro</title>
+    <title>Laporan Pendapatan Merisa Jaya</title>
     <style>
         body { font-family: Arial, sans-serif; color: #333; line-height: 1.6; margin: 0; padding: 40px; }
         .header { text-align: center; border-bottom: 2px solid #2face0; padding-bottom: 20px; margin-bottom: 20px; }
@@ -31,7 +31,7 @@
     </div>
 
     <div class="header">
-        <h1>SALTPRO - LAPORAN PENJUALAN</h1>
+        <h1>Merisa Jaya - LAPORAN PENJUALAN</h1>
         <p>Dicetak pada: {{ date('d F Y, H:i') }}</p>
     </div>
 
@@ -72,7 +72,7 @@
     <div style="margin-top: 50px; text-align: right;">
         <p>Mengetahui,</p>
         <br><br><br>
-        <p><strong>Admin SaltPro</strong></p>
+        <p><strong>Admin Merisa Jaya</strong></p>
     </div>
 
 </body>

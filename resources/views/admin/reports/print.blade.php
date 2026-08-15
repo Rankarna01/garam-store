@@ -42,6 +42,7 @@
                 <th>Tanggal Transaksi</th>
                 <th>Nomor Invoice</th>
                 <th>Nama Pelanggan</th>
+                <th class="text-center">Metode / Tipe</th>
                 <th class="text-center">Status</th>
                 <th class="text-right">Total Transaksi</th>
             </tr>
@@ -53,17 +54,18 @@
                 <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                 <td>{{ $order->invoice_number }}</td>
                 <td>{{ $order->customer_name }}</td>
+                <td class="text-center">{{ strtoupper($order->payment_method ?? 'MIDTRANS') }} ({{ strtoupper($order->order_type ?? 'ONLINE') }})</td>
                 <td class="text-center">{{ strtoupper($order->status) }}</td>
                 <td class="text-right">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="text-center">Belum ada data penjualan yang sukses.</td>
+                <td colspan="7" class="text-center">Belum ada data penjualan yang sukses.</td>
             </tr>
             @endforelse
             
             <tr class="total-row">
-                <td colspan="5" class="text-right">TOTAL PENDAPATAN BERSIH</td>
+                <td colspan="6" class="text-right">TOTAL PENDAPATAN BERSIH</td>
                 <td class="text-right">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</td>
             </tr>
         </tbody>

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PasswordResetController;
+use App\Http\Controllers\Admin\StockController;
 
 
 /*
@@ -77,7 +78,13 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        Route::resource('products', ProductController::class);
+        Route::resource('products', ProductController::class)->except(['edit', 'update']);
+        Route::get('stock', [StockController::class, 'index'])->name('stock.index');
+        Route::post('stock/add', [StockController::class, 'add'])->name('stock.add');
+
+        Route::get('orders/create', [OrderController::class, 'create'])->name('orders.create');
+        Route::post('orders/manual', [OrderController::class, 'storeManual'])->name('orders.storeManual');
+        Route::get('orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
         Route::resource('orders', OrderController::class)->only(['index', 'show', 'update']);
         // TAMBAHKAN INI: Manajemen Pengguna
         Route::resource('users', UserController::class)->only(['index', 'destroy']);

@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
 
 class CheckoutController extends Controller
 {
@@ -14,104 +15,156 @@ class CheckoutController extends Controller
     {
         $cartItems = session()->get('cart', []);
         
-        // HAPUS COMMENT INI JIKA SUDAH PAKAI KERANJANG SUNGGUHAN
         if (empty($cartItems)) {
             return redirect('/#products')->with('error', 'Keranjang Anda kosong! Silakan pilih produk terlebih dahulu.');
         }
 
         $totalAmount = 0;
-        foreach($cartItems as $item) {
+        $cartModified = false;
+        $warningMessages = [];
+
+        foreach($cartItems as $id => &$item) {
+            $product = Product::find($id);
+            if (!$product || !$product->is_active || $product->stock <= 0) {
+                unset($cartItems[$id]);
+                $cartModified = true;
+                $warningMessages[] = "Produk '" . ($item['name'] ?? 'Pilihan') . "' telah dihapus dari keranjang karena stok habis.";
+                continue;
+            }
+
+            if ($item['quantity'] > $product->stock) {
+                $item['quantity'] = $product->stock;
+                $cartModified = true;
+                $warningMessages[] = "Jumlah produk '{$product->name}' disesuaikan menjadi {$product->stock} sesuai sisa stok.";
+            }
+
+            $item['stock'] = $product->stock;
             $totalAmount += $item['price'] * $item['quantity'];
         }
+        unset($item);
 
-        // Dummy data jika keranjang kosong (untuk testing)
-        // if(empty($cartItems)) { $totalAmount = 150000; } 
+        if ($cartModified) {
+            session()->put('cart', $cartItems);
+            if (empty($cartItems)) {
+                return redirect('/#products')->with('error', 'Semua item di keranjang Anda habis atau tidak tersedia.');
+            }
+        }
 
-        return view('checkout', compact('cartItems', 'totalAmount'));
+        return view('checkout', compact('cartItems', 'totalAmount'))->with('warningMessages', $warningMessages);
     }
 
     public function process(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'phone' => 'required',
-            'address' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:30',
+            'address' => 'required|string',
         ]);
 
         $cartItems = session()->get('cart', []);
-        
-        $totalAmount = 0;
-        foreach($cartItems as $item) {
-            $totalAmount += $item['price'] * $item['quantity'];
+        if (empty($cartItems)) {
+            return redirect('/#products')->with('error', 'Keranjang Anda kosong!');
         }
 
-        // Dummy data total jika kosong
-        // if(empty($cartItems)) { $totalAmount = 150000; }
-
-        // 1. Simpan ke database
-        $order = Order::create([
-            'user_id' => auth()->id(), // <== INI TAMBAHANNYA
-            'invoice_number' => 'INV-' . date('Ymd') . '-' . strtoupper(Str::random(5)),
-            'customer_name' => $request->name,
-            'customer_email' => $request->email,
-            'customer_phone' => $request->phone,
-            'customer_address' => $request->address,
-            'total_price' => $totalAmount,
-            'status' => 'pending',
-        ]);
-
-        // 2. Simpan Item (Jika ada)
-        if(!empty($cartItems)){
-            foreach($cartItems as $id => $details) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $id,
-                    'product_name' => $details['name'],
-                    'price' => $details['price'],
-                    'quantity' => $details['quantity'],
-                ]);
-            }
-        }
-
-        // 3. SIMPAN INVOICE KE SESSION UNTUK RIWAYAT PESANAN (GUEST)
-        $myOrders = session()->get('my_orders', []);
-        if(!in_array($order->invoice_number, $myOrders)){
-            session()->push('my_orders', $order->invoice_number);
-        }
-
-        // 3. Konfigurasi Midtrans
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = config('midtrans.is_sanitized');
-        \Midtrans\Config::$is3ds = config('midtrans.is_3ds');
-
-        // 4. Buat Payload untuk dikirim ke Midtrans
-        $params = array(
-            'transaction_details' => array(
-                'order_id' => $order->invoice_number,
-                'gross_amount' => $order->total_price,
-            ),
-            'customer_details' => array(
-                'first_name' => $order->customer_name,
-                'email' => $order->customer_email,
-                'phone' => $order->customer_phone,
-            ),
-        );
-
-        // 5. Dapatkan Snap Token
         try {
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
-            $order->snap_token = $snapToken;
-            $order->save();
+            $order = DB::transaction(function () use ($request, $cartItems) {
+                $totalAmount = 0;
+                $lockedProducts = [];
 
-            session()->forget('cart'); // Kosongkan keranjang
+                // 1. Validasi & Kunci Stok Setiap Produk
+                foreach ($cartItems as $id => $details) {
+                    $product = Product::lockForUpdate()->find($id);
 
-            // Arahkan ke halaman pembayaran
+                    if (!$product || !$product->is_active) {
+                        throw new \Exception("Produk '{$details['name']}' sudah tidak aktif atau tidak ditemukan.");
+                    }
+
+                    $requestedQty = (int)$details['quantity'];
+                    if ($requestedQty < 1) {
+                        throw new \Exception("Jumlah pesanan untuk '{$product->name}' tidak valid.");
+                    }
+
+                    if ($product->stock < $requestedQty) {
+                        throw new \Exception("Stok untuk produk '{$product->name}' tidak mencukupi. Tersedia: {$product->stock}, diminta: {$requestedQty}.");
+                    }
+
+                    $itemTotal = $product->price * $requestedQty;
+                    $totalAmount += $itemTotal;
+
+                    $lockedProducts[] = [
+                        'product' => $product,
+                        'quantity' => $requestedQty,
+                        'price' => $product->price,
+                        'name' => $product->name,
+                    ];
+                }
+
+                // 2. Simpan Pesanan ke Database
+                $newOrder = Order::create([
+                    'user_id' => auth()->id(),
+                    'invoice_number' => 'INV-' . date('Ymd') . '-' . strtoupper(Str::random(5)),
+                    'customer_name' => $request->name,
+                    'customer_email' => $request->email,
+                    'customer_phone' => $request->phone,
+                    'customer_address' => $request->address,
+                    'total_price' => $totalAmount,
+                    'status' => 'pending',
+                    'payment_method' => 'midtrans',
+                    'order_type' => 'online',
+                ]);
+
+                // 3. Simpan Item Pesanan & Kurangi Stok Produk
+                foreach ($lockedProducts as $item) {
+                    OrderItem::create([
+                        'order_id' => $newOrder->id,
+                        'product_id' => $item['product']->id,
+                        'product_name' => $item['name'],
+                        'price' => $item['price'],
+                        'quantity' => $item['quantity'],
+                    ]);
+
+                    // POTONG STOK PRODUK
+                    $item['product']->decrement('stock', $item['quantity']);
+                }
+
+                // 4. Konfigurasi Midtrans & Request Snap Token
+                \Midtrans\Config::$serverKey = config('midtrans.server_key');
+                \Midtrans\Config::$isProduction = config('midtrans.is_production');
+                \Midtrans\Config::$isSanitized = config('midtrans.is_sanitized');
+                \Midtrans\Config::$is3ds = config('midtrans.is_3ds');
+
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $newOrder->invoice_number,
+                        'gross_amount' => (int)$newOrder->total_price,
+                    ],
+                    'customer_details' => [
+                        'first_name' => $newOrder->customer_name,
+                        'email' => $newOrder->customer_email,
+                        'phone' => $newOrder->customer_phone,
+                    ],
+                ];
+
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+                $newOrder->snap_token = $snapToken;
+                $newOrder->save();
+
+                return $newOrder;
+            });
+
+            // Simpan invoice ke session untuk riwayat pesanan (Guest/Auth)
+            $myOrders = session()->get('my_orders', []);
+            if (!in_array($order->invoice_number, $myOrders)) {
+                session()->push('my_orders', $order->invoice_number);
+            }
+
+            session()->forget('cart'); // Kosongkan keranjang setelah checkout sukses
+
             return redirect()->route('checkout.payment', $order->invoice_number);
-            
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memproses pembayaran dengan Midtrans. ' . $e->getMessage());
+            return back()->with('error', 'Gagal memproses checkout: ' . $e->getMessage());
         }
     }
 
@@ -121,7 +174,7 @@ class CheckoutController extends Controller
         $order = Order::where('invoice_number', $invoice_number)->firstOrFail();
         
         // Jika sudah dibayar, lempar ke halaman sukses
-        if($order->status == 'paid' || $order->status == 'processed' || $order->status == 'shipped' || $order->status == 'completed') {
+        if(in_array($order->status, ['paid', 'processed', 'shipped', 'completed'])) {
             return redirect()->route('order.track', $order->invoice_number)->with('success', 'Pesanan ini sudah berhasil dibayar.');
         }
 
@@ -132,23 +185,32 @@ class CheckoutController extends Controller
     public function callback(Request $request)
     {
         $serverKey = config('midtrans.server_key');
-        // Midtrans mengirimkan signature_key untuk memvalidasi bahwa request ini asli dari server mereka
         $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
         
-        if($hashed == $request->signature_key) {
-            // Cari pesanan berdasarkan Invoice Number
-            $order = Order::where('invoice_number', $request->order_id)->first();
+        if ($hashed == $request->signature_key) {
+            $order = Order::where('invoice_number', $request->order_id)->with('items')->first();
             
-            if($order) {
-                // Jika pembayaran berhasil (sukses ditangkap atau di-settle oleh bank)
-                if($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
-                    $order->update(['status' => 'paid']); // <-- Mengubah status ke Sudah Dibayar
+            if ($order) {
+                // Jika pembayaran berhasil
+                if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+                    $order->update(['status' => 'paid']);
                 } 
                 // Jika pembayaran kadaluarsa, gagal, atau dibatalkan
-                else if ($request->transaction_status == 'cancel' || $request->transaction_status == 'deny' || $request->transaction_status == 'expire') {
-                    $order->update(['status' => 'cancelled']);
+                else if (in_array($request->transaction_status, ['cancel', 'deny', 'expire'])) {
+                    // Jika sebelumnya belum cancelled, kembalikan stok produk
+                    if ($order->status !== 'cancelled') {
+                        $order->update(['status' => 'cancelled']);
+                        foreach ($order->items as $item) {
+                            if ($item->product_id) {
+                                $prod = Product::find($item->product_id);
+                                if ($prod) {
+                                    $prod->increment('stock', $item->quantity);
+                                }
+                            }
+                        }
+                    }
                 }
-                // Jika pembayaran masih pending (misal baru cetak kode VA tapi belum transfer)
+                // Jika pembayaran masih pending
                 else if ($request->transaction_status == 'pending') {
                     $order->update(['status' => 'pending']);
                 }
@@ -163,8 +225,7 @@ class CheckoutController extends Controller
     {
         $order = Order::where('invoice_number', $invoice_number)->first();
         
-        if($order && $order->status == 'pending') {
-            // Ubah status menjadi paid
+        if ($order && $order->status == 'pending') {
             $order->update(['status' => 'paid']);
             return response()->json(['success' => true, 'message' => 'Status berhasil diubah ke Paid']);
         }

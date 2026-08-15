@@ -34,9 +34,10 @@
                         <td class="p-4">
                             <form action="{{ route('admin.users.updateRole', $user->id) }}" method="POST" class="flex items-center gap-2">
                                 @csrf @method('PUT')
-                                <select name="role" onchange="this.form.submit()" class="px-3 py-1 rounded-lg text-sm border border-gray-200 outline-none {{ $user->role === 'admin' ? 'bg-primary/10 text-primary font-bold' : 'bg-gray-100' }}">
+                                <select name="role" onchange="this.form.submit()" class="px-3 py-1.5 rounded-lg text-xs font-semibold border outline-none cursor-pointer {{ $user->role === 'admin' ? 'bg-primary/10 text-primary border-primary/30' : ($user->role === 'owner' ? 'bg-purple-100 text-purple-700 border-purple-300' : 'bg-gray-100 text-gray-700 border-gray-200') }}">
                                     <option value="customer" {{ $user->role == 'customer' ? 'selected' : '' }}>Pelanggan</option>
                                     <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                    <option value="owner" {{ $user->role == 'owner' ? 'selected' : '' }}>Owner</option>
                                 </select>
                             </form>
                         </td>

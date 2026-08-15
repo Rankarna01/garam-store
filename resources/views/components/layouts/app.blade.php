@@ -183,6 +183,7 @@
                         // Looping item keranjang
                         for (const [id, details] of Object.entries(data.cartData)) {
                             let imageUrl = details.image ? `/storage/${details.image}` : `https://ui-avatars.com/api/?name=${encodeURIComponent(details.name)}&background=f3f4f6&color=gray`;
+                            let maxStock = details.stock || 999;
                             
                             html += `
                                 <div class="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm relative">
@@ -191,10 +192,11 @@
                                     <div class="flex-1">
                                         <h4 class="font-semibold text-dark-text text-sm mb-1">${details.name}</h4>
                                         <p class="text-sea-blue font-bold text-sm">Rp ${new Intl.NumberFormat('id-ID').format(details.price)}</p>
+                                        <span class="text-[11px] text-gray-400">Sisa stok: ${maxStock}</span>
                                     </div>
                                     
                                     <div class="flex items-center">
-                                        <input type="number" min="1" value="${details.quantity}" onchange="updateQuantity(${id}, parseInt(this.value) || 1)" class="w-16 px-2 py-1.5 text-center text-sm font-semibold bg-[#f8fdff] border border-light-blue rounded-lg focus:outline-none focus:border-sea-blue transition-colors">
+                                        <input type="number" min="1" max="${maxStock}" value="${details.quantity}" onchange="updateQuantity(${id}, parseInt(this.value) || 1, ${maxStock})" class="w-16 px-2 py-1.5 text-center text-sm font-semibold bg-[#f8fdff] border border-light-blue rounded-lg focus:outline-none focus:border-sea-blue transition-colors">
                                     </div>
 
                                     <button onclick="removeItem(${id})" class="absolute -top-2 -right-2 w-7 h-7 bg-white text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors shadow-md border border-gray-100 cursor-pointer">
@@ -217,7 +219,7 @@
             };
 
             // 3. Tambah Item ke Keranjang
-            window.addToCart = function(productId, productName) {
+            window.addToCart = function(productId, productName, quantity = 1) {
                 fetch("{{ route('cart.add') }}", {
                     method: 'POST',
                     headers: {
@@ -225,22 +227,36 @@
                         'X-CSRF-TOKEN': csrfToken,
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ product_id: productId })
+                    body: JSON.stringify({ 
+                        product_id: productId,
+                        quantity: quantity 
+                    })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.success) {
+                .then(async response => {
+                    const data = await response.json();
+                    if(response.ok && data.success) {
                         // Buka laci setelah berhasil masuk keranjang
                         toggleCartDrawer();
+                    } else {
+                        alert(data.message || 'Gagal menambahkan produk ke keranjang.');
                     }
                 })
-                .catch(error => console.error('Error adding to cart:', error));
+                .catch(error => {
+                    console.error('Error adding to cart:', error);
+                    alert('Terjadi kesalahan saat menambahkan ke keranjang.');
+                });
             };
 
             // 4. Ubah Kuantitas
-            window.updateQuantity = function(productId, newQuantity) {
+            window.updateQuantity = function(productId, newQuantity, maxStock = null) {
                 if(newQuantity < 1) {
                     removeItem(productId);
+                    return;
+                }
+
+                if(maxStock && newQuantity > maxStock) {
+                    alert(`Jumlah tidak boleh melebihi stok yang tersedia (${maxStock}).`);
+                    fetchCartData();
                     return;
                 }
 
@@ -253,11 +269,19 @@
                     },
                     body: JSON.stringify({ id: productId, quantity: newQuantity })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.success) fetchCartData(); // Render ulang jika sukses
+                .then(async response => {
+                    const data = await response.json();
+                    if(response.ok && data.success) {
+                        fetchCartData(); // Render ulang jika sukses
+                    } else {
+                        alert(data.message || 'Gagal mengubah kuantitas.');
+                        fetchCartData();
+                    }
                 })
-                .catch(error => console.error('Error updating cart:', error));
+                .catch(error => {
+                    console.error('Error updating cart:', error);
+                    fetchCartData();
+                });
             };
 
             // 5. Hapus Item

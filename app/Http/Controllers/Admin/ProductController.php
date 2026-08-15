@@ -44,44 +44,22 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan!');
     }
 
-    // --- TAMBAHKAN KODE INI UNTUK FITUR EDIT ---
-
-    public function edit(Product $product)
-    {
-        return view('admin.products.edit', compact('product'));
-    }
-
-    public function update(Request $request, Product $product)
+    // Fitur Tambah Stok Produk
+    public function addStock(Request $request, Product $product)
     {
         $request->validate([
-            'name' => 'required|max:255',
-            'price' => 'required|numeric',
-            'weight' => 'required|numeric',
-            'stock' => 'required|numeric',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'additional_stock' => 'required|integer|min:1',
+        ], [
+            'additional_stock.required' => 'Jumlah stok wajib diisi.',
+            'additional_stock.integer' => 'Jumlah stok harus berupa angka bulat.',
+            'additional_stock.min' => 'Jumlah stok minimal 1.',
         ]);
 
-        $data = $request->all();
-        $data['slug'] = Str::slug($request->name);
-        $data['is_active'] = $request->has('is_active');
+        $added = (int)$request->additional_stock;
+        $product->increment('stock', $added);
 
-        // Cek jika admin mengupload gambar baru
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama dari storage jika ada
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            // Simpan gambar baru
-            $data['image'] = $request->file('image')->store('products', 'public');
-        }
-
-        // Update data ke database
-        $product->update($data);
-
-        return redirect()->route('admin.products.index')->with('success', 'Data produk berhasil diperbarui!');
+        return redirect()->route('admin.products.index')->with('success', "Stok untuk '{$product->name}' berhasil ditambah sebanyak +{$added}. (Total stok sekarang: {$product->stock})");
     }
-
-    // --- BATAS TAMBAHAN KODE ---
 
     public function destroy(Product $product)
     {

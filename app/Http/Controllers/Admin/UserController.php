@@ -16,11 +16,11 @@ class UserController extends Controller
 
     public function updateRole(Request $request, User $user)
     {
-        $request->validate(['role' => 'required|in:admin,customer']);
+        $request->validate(['role' => 'required|in:admin,customer,owner']);
         
         // Mencegah admin menghapus akses admin dirinya sendiri
-        if($user->id === auth()->id() && $request->role === 'customer') {
-            return back()->with('error', 'Anda tidak bisa mengubah role Anda sendiri!');
+        if($user->id === auth()->id() && $request->role !== 'admin') {
+            return back()->with('error', 'Anda tidak bisa mengubah role akun Anda sendiri!');
         }
 
         $user->update(['role' => $request->role]);

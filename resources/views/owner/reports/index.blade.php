@@ -44,6 +44,7 @@
                         <th class="p-5 font-medium">Tanggal</th>
                         <th class="p-5 font-medium">No. Invoice</th>
                         <th class="p-5 font-medium">Pelanggan</th>
+                        <th class="p-5 font-medium">Metode / Tipe</th>
                         <th class="p-5 font-medium">Status</th>
                         <th class="p-5 font-medium text-right">Nominal (Rp)</th>
                     </tr>
@@ -54,6 +55,17 @@
                         <td class="p-5 text-sm text-textDark">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                         <td class="p-5 text-sm font-semibold text-primary">{{ $order->invoice_number }}</td>
                         <td class="p-5 text-sm text-textDark">{{ $order->customer_name }}</td>
+                        <td class="p-5 text-xs">
+                            @if($order->payment_method === 'cash' || $order->order_type === 'offline')
+                                <span class="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 font-bold inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-money-bill-wave"></i> Cash (Offline)
+                                </span>
+                            @else
+                                <span class="px-2.5 py-1 rounded-md bg-blue-100 text-blue-800 font-semibold inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-globe"></i> Online (Midtrans)
+                                </span>
+                            @endif
+                        </td>
                         <td class="p-5">
                             @if($order->status == 'completed')
                                 <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Selesai</span>
@@ -65,7 +77,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="p-8 text-center text-textLight">Belum ada data penjualan yang sukses.</td>
+                        <td colspan="6" class="p-8 text-center text-textLight">Belum ada data penjualan yang sukses.</td>
                     </tr>
                     @endforelse
                 </tbody>

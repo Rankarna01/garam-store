@@ -34,6 +34,7 @@
                         <th class="p-4 font-medium">Tanggal</th>
                         <th class="p-4 font-medium">Invoice</th>
                         <th class="p-4 font-medium">Pelanggan</th>
+                        <th class="p-4 font-medium">Metode / Tipe</th>
                         <th class="p-4 font-medium">Status</th>
                         <th class="p-4 font-medium text-right">Pendapatan</th>
                     </tr>
@@ -44,11 +45,22 @@
                         <td class="p-4 text-textLight">{{ $order->created_at->format('d M Y, H:i') }}</td>
                         <td class="p-4 font-semibold text-textDark">{{ $order->invoice_number }}</td>
                         <td class="p-4">{{ $order->customer_name }}</td>
-                        <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">{{ strtoupper($order->status) }}</span></td>
+                        <td class="p-4 text-xs">
+                            @if($order->payment_method === 'cash' || $order->order_type === 'offline')
+                                <span class="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 font-bold inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-money-bill-wave"></i> Cash (Offline)
+                                </span>
+                            @else
+                                <span class="px-2.5 py-1 rounded-md bg-blue-100 text-blue-800 font-semibold inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-globe"></i> Midtrans
+                                </span>
+                            @endif
+                        </td>
+                        <td class="p-4"><span class="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">{{ strtoupper($order->status) }}</span></td>
                         <td class="p-4 font-bold text-primary text-right">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                     </tr>
                     @empty
-                    <tr><td colspan="5" class="p-8 text-center text-textLight">Belum ada data pendapatan.</td></tr>
+                    <tr><td colspan="6" class="p-8 text-center text-textLight">Belum ada data pendapatan.</td></tr>
                     @endforelse
                 </tbody>
             </table>

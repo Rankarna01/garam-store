@@ -15,9 +15,27 @@
                 <span class="text-dark-text font-medium">Checkout</span>
             </div>
 
-            <h1 class="text-3xl lg:text-4xl font-bold font-poppins text-dark-text mb-10">
+            <h1 class="text-3xl lg:text-4xl font-bold font-poppins text-dark-text mb-6">
                 Selesaikan <span class="text-gradient">Pesanan Anda</span>
             </h1>
+
+            @if(session('error'))
+                <div class="mb-6 p-4 bg-red-100 border border-red-200 text-red-700 rounded-2xl flex items-center gap-3 text-sm">
+                    <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 text-red-500"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if(!empty($warningMessages))
+                <div class="mb-6 space-y-2">
+                    @foreach($warningMessages as $wMsg)
+                    <div class="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl flex items-center gap-3 text-sm">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-amber-500"></i>
+                        <span>{{ $wMsg }}</span>
+                    </div>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="grid lg:grid-cols-12 gap-10">
                 

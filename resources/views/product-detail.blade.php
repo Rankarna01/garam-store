@@ -37,9 +37,15 @@
                     </div>
 
                     <div class="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-light-blue mb-6 w-max">
-                            <span class="w-2 h-2 rounded-full bg-sea-blue"></span>
-                            <span class="text-sm font-medium text-deep-blue">Stok: {{ $product->stock }} tersedia</span>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full {{ $product->stock > 0 ? 'bg-light-blue' : 'bg-red-50' }} mb-6 w-max">
+                            <span class="w-2 h-2 rounded-full {{ $product->stock > 0 ? 'bg-sea-blue' : 'bg-red-500' }}"></span>
+                            <span class="text-sm font-medium {{ $product->stock > 0 ? 'text-deep-blue' : 'text-red-600' }}">
+                                @if($product->stock > 0)
+                                    Stok: {{ $product->stock }} tersedia
+                                @else
+                                    Stok Habis
+                                @endif
+                            </span>
                         </div>
 
                         <h1 class="text-3xl lg:text-4xl font-bold font-poppins text-dark-text mb-4">
@@ -62,7 +68,7 @@
                             @endif
                         </div>
 
-                        <div class="mb-8">
+                        <div class="mb-6">
                             <h3 class="font-bold text-dark-text mb-2">Informasi Produk:</h3>
                             <ul class="space-y-2 text-grey-text text-sm">
                                 <li><strong class="text-dark-text">Berat Bersih:</strong> {{ $product->weight }} KG</li>
@@ -70,19 +76,38 @@
                             </ul>
                         </div>
 
-                        <div class="mb-10">
+                        <div class="mb-8">
                             <h3 class="font-bold text-dark-text mb-2">Deskripsi:</h3>
                             <p class="text-grey-text leading-relaxed">
                                 {{ $product->description ?? 'Garam kualitas premium yang diproses secara alami untuk mempertahankan kandungan mineral terbaik bagi kesehatan keluarga Anda.' }}
                             </p>
                         </div>
 
+                        @if($product->stock > 0)
+                        <div class="mb-8 flex items-center gap-4">
+                            <span class="font-medium text-dark-text text-sm">Jumlah:</span>
+                            <div class="flex items-center border border-light-blue rounded-xl overflow-hidden bg-[#f8fdff]">
+                                <button type="button" onclick="decrementDetailQty()" class="px-4 py-2 hover:bg-light-blue text-dark-text font-bold transition-colors">-</button>
+                                <input type="number" id="detail-qty" value="1" min="1" max="{{ $product->stock }}" class="w-16 py-2 text-center text-sm font-semibold bg-transparent outline-none" onchange="validateDetailQty(this, {{ $product->stock }})">
+                                <button type="button" onclick="incrementDetailQty({{ $product->stock }})" class="px-4 py-2 hover:bg-light-blue text-dark-text font-bold transition-colors">+</button>
+                            </div>
+                            <span class="text-xs text-grey-text">Maks: {{ $product->stock }}</span>
+                        </div>
+
                         <div class="mt-auto">
-                            <button onclick="addToCart({{ $product->id }}, '{{ $product->name }}')" class="btn-primary w-full justify-center text-lg py-4 shadow-xl shadow-sea-blue/20">
-                                <i data-lucide="shopping-cart" class="w-6 h-6 mr-2"></i>
+                            <button onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', parseInt(document.getElementById('detail-qty').value) || 1)" class="btn-primary w-full justify-center text-lg py-4 shadow-xl shadow-sea-blue/20 flex items-center gap-2">
+                                <i data-lucide="shopping-cart" class="w-6 h-6"></i>
                                 Tambahkan ke Keranjang
                             </button>
                         </div>
+                        @else
+                        <div class="mt-auto">
+                            <button disabled class="w-full bg-gray-200 text-gray-400 rounded-full py-4 text-lg font-medium cursor-not-allowed flex items-center justify-center gap-2 shadow-none">
+                                <i data-lucide="slash" class="w-6 h-6"></i>
+                                Stok Habis
+                            </button>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -92,29 +117,31 @@
     <x-footer />
 
     <script>
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-        function toggleCartDrawer() {
-            const drawer = document.getElementById('cart-drawer');
-            const overlay = document.getElementById('cart-drawer-overlay');
-            
-            if (drawer.classList.contains('translate-x-full')) {
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
-                drawer.classList.remove('translate-x-full');
-            } else {
-                overlay.classList.add('opacity-0');
-                drawer.classList.add('translate-x-full');
-                setTimeout(() => overlay.classList.add('hidden'), 300);
+        function decrementDetailQty() {
+            const el = document.getElementById('detail-qty');
+            if (el) {
+                let val = parseInt(el.value) || 1;
+                if (val > 1) el.value = val - 1;
             }
         }
-
-        let cartItems = 0; // Simulasi sementara
-        function addToCart(productId, productName) {
-            cartItems++;
-            alert(`${productName} berhasil ditambahkan ke keranjang!`);
-            toggleCartDrawer(); 
-            // Nanti disini tempat panggil fetch('/cart/add')
+        function incrementDetailQty(maxStock) {
+            const el = document.getElementById('detail-qty');
+            if (el) {
+                let val = parseInt(el.value) || 1;
+                if (val < maxStock) {
+                    el.value = val + 1;
+                } else {
+                    alert(`Maksimal pesanan sesuai stok adalah ${maxStock}`);
+                }
+            }
+        }
+        function validateDetailQty(el, maxStock) {
+            let val = parseInt(el.value) || 1;
+            if (val < 1) el.value = 1;
+            if (val > maxStock) {
+                alert(`Maksimal pesanan sesuai stok adalah ${maxStock}`);
+                el.value = maxStock;
+            }
         }
     </script>
 </x-layouts.app>

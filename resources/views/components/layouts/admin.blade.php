@@ -102,8 +102,18 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.orders.create') }}" class="sidebar-link flex items-center px-6 py-3 text-sm font-medium text-textLight">
+                        <i class="fa-solid fa-cash-register w-6"></i> Kasir / Transaksi Cash
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.products.index') }}" class="sidebar-link flex items-center px-6 py-3 text-sm font-medium text-textLight">
                         <i class="fa-solid fa-box-open w-6"></i> Produk
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.stock.index') }}" class="sidebar-link flex items-center px-6 py-3 text-sm font-medium text-textLight">
+                        <i class="fa-solid fa-boxes-stacked w-6"></i> Tambah & Kelola Stok
                     </a>
                 </li>
                 <li>

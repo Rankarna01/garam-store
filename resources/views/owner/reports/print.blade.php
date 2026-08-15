@@ -40,11 +40,12 @@
         <thead>
             <tr>
                 <th class="text-center" style="width: 5%;">No</th>
-                <th style="width: 20%;">Tanggal Transaksi</th>
-                <th style="width: 20%;">Nomor Invoice</th>
-                <th style="width: 25%;">Nama Pelanggan</th>
+                <th style="width: 18%;">Tanggal Transaksi</th>
+                <th style="width: 18%;">Nomor Invoice</th>
+                <th style="width: 20%;">Nama Pelanggan</th>
+                <th class="text-center" style="width: 14%;">Metode / Tipe</th>
                 <th class="text-center" style="width: 10%;">Status</th>
-                <th class="text-right" style="width: 20%;">Total Transaksi</th>
+                <th class="text-right" style="width: 15%;">Total Transaksi</th>
             </tr>
         </thead>
         <tbody>
@@ -54,17 +55,18 @@
                 <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                 <td>{{ $order->invoice_number }}</td>
                 <td>{{ $order->customer_name }}</td>
+                <td class="text-center">{{ strtoupper($order->payment_method ?? 'MIDTRANS') }} ({{ strtoupper($order->order_type ?? 'ONLINE') }})</td>
                 <td class="text-center">{{ strtoupper($order->status) }}</td>
                 <td class="text-right">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="6" class="text-center">Belum ada data pendapatan.</td>
+                <td colspan="7" class="text-center">Belum ada data pendapatan.</td>
             </tr>
             @endforelse
             
             <tr class="total-row">
-                <td colspan="5" class="text-right">TOTAL PENDAPATAN BERSIH</td>
+                <td colspan="6" class="text-right">TOTAL PENDAPATAN BERSIH</td>
                 <td class="text-right">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</td>
             </tr>
         </tbody>

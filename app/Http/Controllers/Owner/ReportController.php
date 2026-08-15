@@ -42,7 +42,7 @@ class ReportController extends Controller
         $callback = function() use($orders) {
             $file = fopen('php://output', 'w');
             // Header Kolom di Excel
-            fputcsv($file, ['No', 'Tanggal Transaksi', 'No. Invoice', 'Nama Pelanggan', 'Status', 'Total Pendapatan (Rp)']);
+            fputcsv($file, ['No', 'Tanggal Transaksi', 'No. Invoice', 'Nama Pelanggan', 'Metode Bayar', 'Tipe Transaksi', 'Status', 'Total Pendapatan (Rp)']);
             
             $no = 1;
             foreach ($orders as $order) {
@@ -51,6 +51,8 @@ class ReportController extends Controller
                     $order->created_at->format('Y-m-d H:i'), 
                     $order->invoice_number, 
                     $order->customer_name, 
+                    strtoupper($order->payment_method ?? 'MIDTRANS'),
+                    strtoupper($order->order_type ?? 'ONLINE'),
                     strtoupper($order->status), 
                     $order->total_price
                 ]);

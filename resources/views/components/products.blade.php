@@ -45,7 +45,11 @@
                         <span class="px-3 py-1 rounded-full bg-white/90 backdrop-blur-sm text-xs font-medium text-deep-blue">Garam Premium</span>
                     </div>
                     
-                    @if($product->original_price > $product->price)
+                    @if($product->stock <= 0)
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1 rounded-full bg-gray-800/80 text-white text-xs font-medium backdrop-blur-sm">Stok Habis</span>
+                    </div>
+                    @elseif($product->original_price > $product->price)
                     <div class="absolute top-4 right-4">
                         <span class="px-3 py-1 rounded-full bg-red-500 text-white text-xs font-medium">Diskon</span>
                     </div>
@@ -64,7 +68,12 @@
                         <i data-lucide="star" class="w-4 h-4 text-yellow-400 fill-yellow-400"></i>
                     </div>
                     <h3 class="text-lg font-bold text-dark-text font-poppins mb-1">{{ $product->name }}</h3>
-                    <p class="text-sm text-grey-text mb-3">{{ $product->weight }} KG</p>
+                    <div class="flex items-center justify-between text-xs text-grey-text mb-3">
+                        <span>{{ $product->weight }} KG</span>
+                        <span class="{{ $product->stock > 0 ? 'text-sea-blue font-medium' : 'text-red-500 font-medium' }}">
+                            {{ $product->stock > 0 ? 'Sisa stok: ' . $product->stock : 'Stok Habis' }}
+                        </span>
+                    </div>
                     <p class="text-sm text-grey-text line-clamp-2 mb-4">{{ Str::limit($product->description, 80) }}</p>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
@@ -73,9 +82,15 @@
                                 <span class="text-sm text-grey-text line-through">Rp {{ number_format($product->original_price, 0, ',', '.') }}</span>
                             @endif
                         </div>
-                        <button onclick="addToCart({{ $product->id }}, '{{ $product->name }}')" class="w-10 h-10 rounded-full bg-light-blue flex items-center justify-center hover:bg-sea-blue hover:text-white transition-all duration-300 add-to-cart-btn shrink-0">
+                        @if($product->stock > 0)
+                        <button onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}')" class="w-10 h-10 rounded-full bg-light-blue flex items-center justify-center hover:bg-sea-blue hover:text-white transition-all duration-300 add-to-cart-btn shrink-0" title="Tambah ke keranjang">
                             <i data-lucide="shopping-cart" class="w-5 h-5"></i>
                         </button>
+                        @else
+                        <button disabled class="w-10 h-10 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center cursor-not-allowed shrink-0" title="Stok habis">
+                            <i data-lucide="slash" class="w-4 h-4"></i>
+                        </button>
+                        @endif
                     </div>
                 </div>
             </div>

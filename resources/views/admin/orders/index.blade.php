@@ -6,7 +6,7 @@
         </div>
     @endif
 
-    <div class="bg-surface rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-surface rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
         <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h2 class="text-lg font-semibold text-secondary">Semua Transaksi & Pesanan</h2>
@@ -15,6 +15,41 @@
             <a href="{{ route('admin.orders.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-md shadow-green-600/20 flex items-center justify-center gap-2">
                 <i class="fa-solid fa-plus"></i> Input Transaksi Cash / Manual
             </a>
+        </div>
+
+        <!-- SEARCH & FILTER BAR -->
+        <div class="p-4 bg-gray-50/70 border-b border-gray-100 flex flex-col md:flex-row items-center justify-between gap-3">
+            <!-- Tabs Tipe -->
+            <div class="flex items-center gap-1.5 w-full md:w-auto">
+                <a href="{{ route('admin.orders.index', array_merge(request()->except(['type', 'page']), [])) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ !request('type') ? 'bg-primary text-white shadow-sm' : 'bg-white text-textDark border border-gray-200 hover:bg-gray-100' }}">
+                    Semua ({{ $orders->total() }})
+                </a>
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['type' => 'offline'])) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ request('type') === 'offline' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-textDark border border-gray-200 hover:bg-gray-100' }}">
+                    <i class="fa-solid fa-money-bill-wave mr-1"></i> Cash / Offline
+                </a>
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['type' => 'online'])) }}" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all {{ request('type') === 'online' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-textDark border border-gray-200 hover:bg-gray-100' }}">
+                    <i class="fa-solid fa-globe mr-1"></i> Midtrans / Online
+                </a>
+            </div>
+
+            <!-- Search Form -->
+            <form action="{{ route('admin.orders.index') }}" method="GET" class="flex items-center gap-2 w-full md:w-auto">
+                @if(request('type'))
+                    <input type="hidden" name="type" value="{{ request('type') }}">
+                @endif
+                <div class="relative w-full md:w-64">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari invoice / pelanggan..." class="w-full pl-9 pr-4 py-1.5 rounded-lg border border-gray-200 text-xs focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"></i>
+                </div>
+                <button type="submit" class="bg-secondary hover:bg-primary text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors">
+                    Cari
+                </button>
+                @if(request('search') || request('type'))
+                    <a href="{{ route('admin.orders.index') }}" class="p-1.5 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 text-xs" title="Reset Filter">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                @endif
+            </form>
         </div>
         
         <div class="overflow-x-auto">

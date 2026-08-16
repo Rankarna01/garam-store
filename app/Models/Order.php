@@ -10,7 +10,7 @@ class Order extends Model {
     protected $fillable = [
         'user_id', 'invoice_number', 'customer_name', 'customer_email', 'customer_phone',
         'customer_address', 'total_price', 'status', 'payment_method', 'order_type',
-        'snap_token', 'tracking_number', 'notes'
+        'snap_token', 'tracking_number', 'notes', 'created_at', 'updated_at'
     ];
 
     // Relasi: 1 Order punya banyak Order Item

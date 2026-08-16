@@ -114,8 +114,8 @@
 
                     <div class="space-y-4 mb-6">
                         <div>
-                            <label class="block text-xs font-semibold text-textDark mb-1.5">Tanggal Transaksi</label>
-                            <input type="datetime-local" name="order_date" value="{{ date('Y-m-d\TH:i') }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm bg-gray-50 font-medium">
+                            <label class="block text-xs font-semibold text-textDark mb-1.5">Tanggal Transaksi (WIB)</label>
+                            <input type="datetime-local" name="order_date" value="{{ \Carbon\Carbon::now('Asia/Jakarta')->format('Y-m-d\TH:i') }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm bg-gray-50 font-medium">
                         </div>
 
                         <div>
@@ -322,6 +322,38 @@
                 changeDisplay.className = 'text-base font-bold text-gray-500 font-poppins';
             }
         }
+
+        // Validasi Form sebelum submit
+        document.getElementById('manualOrderForm').addEventListener('submit', function(e) {
+            const customerName = document.querySelector('input[name="customer_name"]').value.trim();
+            if (!customerName) {
+                e.preventDefault();
+                alert('Harap isi Nama Pelanggan terlebih dahulu.');
+                document.querySelector('input[name="customer_name"]').focus();
+                return false;
+            }
+
+            const rows = document.querySelectorAll('#productRowsContainer > div');
+            let hasSelectedProduct = false;
+            
+            rows.forEach(r => {
+                const id = r.id.replace('product-row-', '');
+                const select = document.getElementById(`product-select-${id}`);
+                if (select && select.value !== '') {
+                    hasSelectedProduct = true;
+                }
+            });
+
+            if (!hasSelectedProduct) {
+                e.preventDefault();
+                alert('Harap pilih minimal 1 produk garam yang dibeli pada tabel produk!');
+                return false;
+            }
+
+            const submitBtn = document.getElementById('submitOrderBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan Transaksi...';
+        });
 
         // Jalankan saat pertama kali dibuka: tambahkan 1 baris pertama secara otomatis
         document.addEventListener('DOMContentLoaded', function() {
